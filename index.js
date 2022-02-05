@@ -1,7 +1,11 @@
 const express = require('express');
 const { TwitterApi } = require('twitter-api-v2');
 const Reddit = require('reddit');
-const WordPOS = require('wordpos');
+const nlp = require('compromise')
+
+
+nlp.extend(require('compromise-sentences'))
+
     
 
 
@@ -15,7 +19,6 @@ const app = express();
  
 app.get('/', (req, res) => {
 
-    const wordpos = new WordPOS();
 
     const reddit = new Reddit({
         username: 'newsGatherr',
@@ -46,15 +49,29 @@ app.get('/', (req, res) => {
         title: 'BitMidi – 100K+ Free MIDI files',
         url: 'https://bitmidi.com'
     }).then((res) => {
-        for(let i = 0; i < 2; i ++){
 
-            let child = res.data.children[i]
+        let i = 0;
+        let limit = 3;
+        while(i < limit){
 
-            wordpos.getNouns(child.data.title, function(result){
+            if(limit >= res.data.children.length) break;
 
-                rwClient.tweet(child.data.title + ' ' + result.join(' #')  + ' #news #economics' + ' ' + child.data.url);
+            let child = res.data.children[i];
 
-            });
+            i ++;
+
+            
+            if(child.data.link_flair_css_class != "news"){
+                limit ++;
+                continue;
+            } 
+
+            let subject = nlp(child.data.title).sentences().subjects().text().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(" ","");
+            
+            rwClient.tweet(child.data.title + ' #' + subject  + ' #news #economics' + ' ' + child.data.url);
+
+
+            
         }
     })
 
