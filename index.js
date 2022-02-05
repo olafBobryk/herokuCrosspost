@@ -1,6 +1,9 @@
 const express = require('express');
 const { TwitterApi } = require('twitter-api-v2');
 const Reddit = require('reddit');
+const WordPOS = require('wordpos');
+    
+
 
 
 const app = express();
@@ -11,6 +14,8 @@ const app = express();
 
  
 app.get('/', (req, res) => {
+
+    const wordpos = new WordPOS();
 
     const reddit = new Reddit({
         username: 'newsGatherr',
@@ -32,6 +37,8 @@ app.get('/', (req, res) => {
     const rwClient = v2Client.readWrite
 
 
+    try{
+
     reddit.get('/r/Economics/top/.json?f=flair_name%3A"News"', {
         sr: 'WeAreTheMusicMakers',
         kind: 'link',
@@ -40,18 +47,25 @@ app.get('/', (req, res) => {
         url: 'https://bitmidi.com'
     }).then((res) => {
         for(let i = 0; i < 2; i ++){
+
             let child = res.data.children[i]
-            rwClient.tweet(child.data.title + ' ' + child.data.url);
+
+            wordpos.getNouns(child.data.title, function(result){
+
+                rwClient.tweet(child.data.title + ' ' + result.join(' #')  + ' #news #economics' + ' ' + child.data.url);
+
+            });
         }
     })
 
+    }catch(e){}
 
 
 
 
     res
         .status(200)
-        .send('Hello server is running')
+        .send('posted')
         .end();
 });
 
