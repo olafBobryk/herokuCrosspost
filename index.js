@@ -66,9 +66,13 @@ app.get('/', (req, res) => {
                 continue;
             } 
 
-            let subject = nlp(child.data.title).sentences().subjects().text().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(" ","");
+            let subjects = nlp(child.data.title).sentences().subjects().text().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"']/g,"");
+
             
-            rwClient.tweet(child.data.title + ' #' + subject  + ' #news #economics' + ' ' + child.data.url);
+
+
+            
+           rwClient.tweet(child.data.title  + " #" + subjects.split(" ").join('') + ' #news #economics' + ' ' + child.data.url);
 
 
             
