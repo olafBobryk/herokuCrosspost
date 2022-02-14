@@ -1,7 +1,8 @@
 const express = require('express');
 const { TwitterApi } = require('twitter-api-v2');
 const Reddit = require('reddit');
-const nlp = require('compromise')
+const nlp = require('compromise');
+const Instagram = require('instagram-web-api')
 
 
 nlp.extend(require('compromise-sentences'))
@@ -12,12 +13,8 @@ nlp.extend(require('compromise-sentences'))
 
 const app = express();
 
-
-
-
-
  
-app.get('/', (req, res) => {
+app.get('/newsGather', (req, res) => {
 
 
     const reddit = new Reddit({
@@ -89,6 +86,59 @@ app.get('/', (req, res) => {
         .send('posted')
         .end();
 });
+
+
+app.get('/walterBlacc', (req,res) => {
+
+    const instagram = new Instagram({
+        username: 'walterblacck',
+        password: 'tenis10()'
+    }) 
+    
+    
+    const reddit = new Reddit({
+        username: 'newsGatherr',
+        password: 'tenis10()',
+        appId: 'U3FwCy72wcnY1hT0leVY5Q',
+        appSecret: 'qQG-Chclqa8AOa44-nNX9LbXj3-tBg',
+        userAgent: 'newsGatherer/1.0.0 (http://example.com)'
+    })
+    
+    
+    reddit.get('/r/Memes/top/.json?f=flair_name%3A"News"', {
+        sr: 'WeAreTheMusicMakers',
+        kind: 'link',
+        resubmit: true,
+        title: 'BitMidi – 100K+ Free MIDI files',
+        url: 'https://bitmidi.com'
+    }).then((res) => {
+    
+    
+        for(i = 0; i < res.data.children.length; i ++){
+            
+    
+    
+            let child = res.data.children[i];
+            
+    
+            if(child.data.url.endsWith("jpg")){
+    
+                ;(async () => {
+                    const photo = child.data.url
+                
+                    await instagram.login()
+                
+                    // Upload Photo to feed or story, just configure 'post' to 'feed' or 'story'
+                    const { media } = await instagram.uploadPhoto({ photo: photo, caption: 'jesse', post: 'feed' })
+                    console.log(`https://www.instagram.com/p/${media.code}/`)
+                })()
+    
+                break
+            }
+    
+        }
+    })
+})
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
