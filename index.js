@@ -7,141 +7,19 @@ const Instagram = require('instagram-web-api')
 
 nlp.extend(require('compromise-sentences'))
 
-    
-
-
-
 const app = express();
 
- 
-app.get('/newsGather', (req, res) => {
+const fs = require('fs');
 
 
-    const reddit = new Reddit({
-        username: 'newsGatherr',
-        password: 'tenis10()',
-        appId: 'U3FwCy72wcnY1hT0leVY5Q',
-        appSecret: 'qQG-Chclqa8AOa44-nNX9LbXj3-tBg',
-        userAgent: 'newsGatherer/1.0.0 (http://example.com)'
-    })
-            
-    const twitter = new TwitterApi({
-        appKey: 'J55GCcFVwDS4qCO774uYWtHDL',
-        appSecret: '96xqKVIO4OND9jXhf4U8gteilKZnPYHPii3JOw4qZBxNF4fL73',
-        accessToken: '1485709753342959620-jqRsG7JGHirTOu2LWjMQSa4Nvogtbt',
-        accessSecret: 'JIC8gXNHnoZFxt6Y09bFLGAUxJpPk52i8tOKRZwtgAmVJ',
+fs.readdir('./routes', (err, files) => {
+    files.forEach(file => {
+      app.use(require(`./routes/${file}`))
     });
-                            
-            
-    const v2Client = twitter.v2
-    const rwClient = v2Client.readWrite
-
-
-    try{
-
-    reddit.get('/r/Economics/top/.json?f=flair_name%3A"News"', {
-        sr: 'WeAreTheMusicMakers',
-        kind: 'link',
-        resubmit: true,
-        title: 'BitMidi – 100K+ Free MIDI files',
-        url: 'https://bitmidi.com'
-    }).then((res) => {
-
-        let i = 0;
-        let limit = 3;
-        while(i < limit){
-
-            if(limit >= res.data.children.length) break;
-
-            let child = res.data.children[i];
-
-            i ++;
-
-            
-            if(child.data.link_flair_css_class != "news"){
-                limit ++;
-                continue;
-            } 
-
-            let subjects = nlp(child.data.title).sentences().subjects().text().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"']/g,"");
-
-            
-
-
-            
-           rwClient.tweet(child.data.title  + " #" + subjects.split(" ").join('') + ' #news #economics' + ' ' + child.data.url);
-
-
-            
-        }
-    })
-
-    }catch(e){}
-
-
-
-
-    res
-        .status(200)
-        .send('posted')
-        .end();
 });
 
 
-app.get('/walterBlacc', (req,res) => {
-
-    const instagram = new Instagram({
-        username: 'walterblacck',
-        password: 'tenis10()'
-    }) 
-    
-    
-    const reddit = new Reddit({
-        username: 'newsGatherr',
-        password: 'tenis10()',
-        appId: 'U3FwCy72wcnY1hT0leVY5Q',
-        appSecret: 'qQG-Chclqa8AOa44-nNX9LbXj3-tBg',
-        userAgent: 'newsGatherer/1.0.0 (http://example.com)'
-    })
-    
-    
-    reddit.get('/r/Memes/top/.json?f=flair_name%3A"News"', {
-        sr: 'WeAreTheMusicMakers',
-        kind: 'link',
-        resubmit: true,
-        title: 'BitMidi – 100K+ Free MIDI files',
-        url: 'https://bitmidi.com'
-    }).then((res) => {
-    
-    
-        for(i = 0; i < res.data.children.length; i ++){
-            
-    
-    
-            let child = res.data.children[i];
-            
-    
-            if(child.data.url.endsWith("jpg")){
-    
-                ;(async () => {
-                    const photo = child.data.url
-                
-                    await instagram.login()
-                
-                    // Upload Photo to feed or story, just configure 'post' to 'feed' or 'story'
-                    const { media } = await instagram.uploadPhoto({ photo: photo, caption: 'jesse', post: 'feed' })
-                    console.log(`https://www.instagram.com/p/${media.code}/`)
-                })()
-    
-                break
-            }
-    
-        }
-    })
-})
-
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
+  console.log(`http://localhost:${PORT}/`);
 });
