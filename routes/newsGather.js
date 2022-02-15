@@ -3,10 +3,14 @@ const { TwitterApi } = require('twitter-api-v2');
 const Reddit = require('reddit');
 const nlp = require('compromise');
 
+const path = require('path');
+const scriptName = path.basename(__filename);
+const fileName = scriptName.replace('.js','');
 
 const router = express.Router();
 
-router.get('/newsGather', (req,res) => {
+router.get(`/${fileName}`, (req,res) => {
+    
     const reddit = new Reddit({
         username: 'newsGatherr',
         password: 'tenis10()',

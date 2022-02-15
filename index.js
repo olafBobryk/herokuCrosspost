@@ -13,9 +13,9 @@ const fs = require('fs');
 
 
 fs.readdir('./routes', (err, files) => {
-    files.forEach(file => {
-      app.use(require(`./routes/${file}`))
-    });
+  files.forEach(file => {
+    app.use(require(`./routes/${file}`))
+  });
 });
 
 

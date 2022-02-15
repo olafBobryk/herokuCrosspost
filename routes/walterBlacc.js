@@ -3,9 +3,13 @@ const Reddit = require('reddit');
 const express = require('express');
 const nlp = require('compromise');
 
+const path = require('path');
+const scriptName = path.basename(__filename);
+const fileName = scriptName.replace('.js','');
+
 const router = express.Router();
 
-router.get('/walterBlacc', (req,res) => {
+router.get(`/${fileName}`, (req,res) => {
 
     const instagram = new Instagram({
         username: 'walterblacck',
